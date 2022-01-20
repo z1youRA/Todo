@@ -1,0 +1,17 @@
+:root {
+
+}
+
+.todo-collapse {
+    display: flex;
+    align-items: center;
+}
+
+.todo-status {
+    
+}
+
+.todo-importance {
+    width: 20px;
+    height: auto;
+}
