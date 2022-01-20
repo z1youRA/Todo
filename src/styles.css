@@ -3,6 +3,8 @@
     --secondary-dark: #444;
     --primary-light: #eee;
     --secondary-light: #ddd;
+    --header-height: 80px;
+    --footer-height: 40px;
 }
 
 *,
@@ -24,6 +26,11 @@ body {
 
 }
 
+.content {
+    display: flex;
+    flex-direction: column;
+}
+
 .header {
     background-color: var(--primary-dark);
     height: 80px;
@@ -38,6 +45,34 @@ body {
     align-self: center;
     font-size: 50px;
     padding-left: 10px;
+}
+
+.main {
+    display: flex;
+    min-height: calc(100vh - var(--header-height) - var(--footer-height));
+}
+
+.sidebar {
+    display: flex;
+    font-size: 28px;
+    flex-direction: column;
+    background-color: var(--secondary-light);
+    width: 300px;
+    min-height: 100%;
+    padding: 10px;
+}
+
+.side-block {
+    display: flex;
+    gap: 5px;
+    padding: 10px;
+    align-items: center;
+    cursor: pointer;
+}
+
+.side-icon {
+    height: 25px;
+    width: 25px;
 }
 
 .todo-collapse {

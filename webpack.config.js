@@ -6,6 +6,7 @@ module.exports = {
     index: './src/index.js',
     main: './src/main.js',
     header: './src/header.js',
+    sidebar: './src/sidebar.js',
   },
   plugins: [
     new HtmlWebpackPlugin({

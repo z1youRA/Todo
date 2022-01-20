@@ -2,8 +2,8 @@ import Star from './img/stared.png';
 import Unstar from './img/unstar.png';
 
 // Create the main part of the page.
-const createMain = (() => {
-    const main = document.querySelector('.main');
+const createContainer = (() => {
+    const container = document.querySelector('.container');
     // Setup a todo logically, attribute information to it.
     const createTodo = (title, description, dueDate, importance, status) => {
         return {title, description, dueDate, importance, status};
@@ -33,7 +33,7 @@ const createMain = (() => {
         todoCollapse.appendChild(todoTitle);
         todoCollapse.appendChild(todoImportance);
 
-        main.appendChild(todoCollapse);
+        container.appendChild(todoCollapse);
     }
 
     // const displayExpandTodo = (todo) => {
@@ -54,4 +54,4 @@ const createMain = (() => {
 // todoDueDate.classList.add('todo-date');
 
 
-export {createMain};
+export {createContainer};

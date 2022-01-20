@@ -1,6 +1,8 @@
 import './styles.css';
-import { createMain } from './main';
+import { createContainer} from './main';
 import { createHeader } from './header.js';
+import { createSidebar } from './sidebar.js';
 
-createMain.addTodo();
+createContainer.addTodo();
 createHeader();
+createSidebar();
