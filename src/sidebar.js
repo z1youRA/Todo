@@ -25,8 +25,6 @@ const createSidebar = () => {
     const importantBlock =createSideblock('Important', Star);
     const inboxBlock = createSideblock('All Inbox', Inbox);
 
-
-
     sidebar.appendChild(myDayBlock);
     sidebar.appendChild(importantBlock);
     sidebar.appendChild(inboxBlock);
