@@ -140,6 +140,7 @@ const createContainer = (() => {
 
         editPanel.appendChild(generalBlock);
         editPanel.appendChild(myDayBlock);
+        container.style.marginRight = '300px';
     }
 
     // const openEditPanel = () => {
