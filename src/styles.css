@@ -160,3 +160,11 @@ body {
 .edit-panel .side-due-date-title {
     font-size: 20px;
 }
+
+.my-day-block {
+    cursor: pointer;
+}
+
+.my-day-block.added{
+    color: rgb(21, 95, 255);
+}
