@@ -33,15 +33,15 @@ const createContainer = (filter) => {
     let defaultImportance;
     let defaultMyDay;
     if(filter == '0') {  // All tasks
-        defaultImportance = false;
+        defaultImportance = 'false';
         defaultMyDay = 'false';
     }
     else if(filter == '1') { // Important tasks only
-        defaultImportance = true;
+        defaultImportance = 'true';
         defaultMyDay = 'false'; 
     }
     else if(filter == '2') { // Myday tasks
-        defaultImportance = false;
+        defaultImportance = 'false';
         defaultMyDay = 'true'; 
     }
 
@@ -74,7 +74,7 @@ const createContainer = (filter) => {
             addTrigger.classList.add('add-trigger');
             addTrigger.textContent = 'ADD';
             addTrigger.addEventListener('click', () => {
-                addTodo(addTitle.value, 'Task', addDueDate.valueAsDate, defaultImportance, false, defaultMyDay);
+                addTodo(addTitle.value, 'Task', addDueDate.valueAsDate, defaultImportance, 'false', defaultMyDay);
                 render();
             });
             addStatus.classList.add('round-checkbox', 'add-status');
@@ -112,9 +112,9 @@ const createContainer = (filter) => {
     const collapseTodo = (todo) =>  {
         const toggleImportance = (todo) => {
             if(todo.importance == true) {
-                todo.importance = false;
+                todo.importance = 'false';
             }
-            else if(todo.importance == false) {
+            else if(todo.importance == 'false') {
                 todo.importance = true;
             }
         }
@@ -122,7 +122,7 @@ const createContainer = (filter) => {
         const displayImportanceImg = (todo) => {
             if(todo.importance == true)
                 return Star;
-            else if(todo.importance == false)
+            else if(todo.importance == 'false')
                 return Unstar;
         }
         const display = () => {
@@ -198,9 +198,13 @@ const createContainer = (filter) => {
             description.classList.add('side-desc');
             dueDate.classList.add('side-due-date');
             dueDate.type = 'date';
+            dueDate.valueAsDate = currentTask.dueDate;
             saveButton.textContent = 'SAVE';
-            myDayBlock.dataset.value = false;
+            myDayBlock.dataset.value = 'false';
             myDayBlock.classList.add('my-day-block');
+            if(currentTask.myDay == 'true') {
+                myDayBlock.classList.add('added');
+            }
             myDayBlock.addEventListener('click', () => {
                 if(myDayBlock.dataset.value == 'false') {
                     myDayBlock.classList.toggle('added');
@@ -215,8 +219,7 @@ const createContainer = (filter) => {
             icon.src = MyDay;
             myDayTitle.textContent = 'Add to My Day';
             dueDateTitle.textContent = 'Due Date: ';
-            description.placeholder = 'Description';
-
+            description.value = currentTask.description;
             saveButton.addEventListener('click', edit);
 
             titleBlock.appendChild(title);
