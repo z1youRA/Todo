@@ -23,7 +23,10 @@ const createContainer = (() => {
         const getTask = (taskIndex) => {
             return tasklist[taskIndex];
         }
-        return {add, getTaskNum, remove, getTask};
+        const setTask = (index, task) => {
+            tasklist[index] = task;
+        }
+        return {add, getTaskNum, remove, getTask, setTask};
     })();
 
     // Setup a todo logically, attribute information to it.
@@ -111,17 +114,24 @@ const createContainer = (() => {
             const todoStatus = document.createElement('input');
             const todoTitle = document.createElement('div');
             const todoImportance = document.createElement('img');
-            todoCollapse.setAttribute('data-index', taskList.getTaskNum() - 1);
             todoStatus.classList.add('todo-status', 'checkbox');
             todoStatus.setAttribute('type', 'checkbox');
-            todoStatus.addEventListener('click', () => {
-                todo.status = todoStatus.checked;
-            })
+            todoStatus.checked = todo.status;
+
+            todoCollapse.setAttribute('data-index', taskList.getTaskNum() - 1);
+            todoStatus.setAttribute('data-index', taskList.getTaskNum() - 1);
+            todoImportance.setAttribute('data-index', taskList.getTaskNum() - 1);
+
+
             todoTitle.classList.add('todo-title');
             todoTitle.textContent = todo.title;
             todoImportance.classList.add('todo-importance');
             todoImportance.src = displayImportanceImg(todo);
-            todoImportance.addEventListener('click', () => {
+
+            todoStatus.addEventListener('click', (e) => {
+                todo.status = todoStatus.checked;
+            })
+            todoImportance.addEventListener('click', (e) => {
                 toggleImportance(todo);
                 todoImportance.src = displayImportanceImg(todo);
             })     
@@ -133,6 +143,104 @@ const createContainer = (() => {
         }
         return {display};
     }
+
+    const editPanel = (() => {
+        const editPanelBlock = document.querySelector('.edit-panel');
+        let index = -1;
+        const _createEditBlock = () => {
+            const block = document.createElement('div');
+            block.classList.add('edit-block');
+            return block;
+        }
+        const _clear = () => {
+            editPanelBlock.textContent = ''; 
+        }
+
+        // const refresh = () => {
+        //     console.log(index);
+        //     display(index);
+        // }
+
+        const display = (currentIndex) => {
+            index = currentIndex;
+            const currentTask = taskList.getTask(currentIndex);
+            const title = document.createElement('input');
+            const dueDate = document.createElement('input');
+            const description = document.createElement('input');
+            const saveButton = document.createElement('button');
+            _clear();
+            const titleBlock = _createEditBlock();
+
+            const myDayBlock = _createEditBlock();
+            const dueDateBlock = _createEditBlock();
+            const descriptionBlock = _createEditBlock();
+
+            const icon = document.createElement('img');
+            const myDayTitle = document.createElement('div');
+            const dueDateTitle = document.createElement('div');
+            title.defaultValue = currentTask.title;
+            title.classList.add('edit-panel-title');
+            icon.classList.add('side-icon');
+            myDayTitle.classList.add('side-my-day-title');
+            dueDateTitle.classList.add('side-due-date-title');
+            description.classList.add('side-desc');
+            dueDate.classList.add('side-due-date');
+            dueDate.type = 'date';
+            saveButton.textContent = 'SAVE';
+            myDayBlock.dataset.value = false;
+            myDayBlock.classList.add('my-day-block');
+            myDayBlock.addEventListener('click', () => {
+                if(myDayBlock.dataset.value == 'false') {
+                    myDayBlock.classList.toggle('added');
+                    myDayBlock.dataset.value = 'true';
+                }
+                else if(myDayBlock.dataset.value == 'true'){
+                    myDayBlock.classList.toggle('added');
+                    myDayBlock.dataset.value = 'false';
+                }
+            })
+
+            icon.src = MyDay;
+            myDayTitle.textContent = 'Add to My Day';
+            dueDateTitle.textContent = 'Due Date: ';
+            description.placeholder = 'Description';
+
+            saveButton.addEventListener('click', edit);
+
+            titleBlock.appendChild(title);
+            myDayBlock.appendChild(icon);
+            myDayBlock.appendChild(myDayTitle);
+            dueDateBlock.appendChild(dueDateTitle);
+            dueDateBlock.appendChild(dueDate);
+            descriptionBlock.appendChild(description);
+
+            editPanelBlock.appendChild(titleBlock);
+            editPanelBlock.appendChild(myDayBlock);
+            editPanelBlock.appendChild(dueDateBlock);
+            editPanelBlock.appendChild(descriptionBlock);
+            editPanelBlock.appendChild(saveButton);
+            container.style.marginRight = '300px';
+        }
+
+        const getEditedInfo = () => {
+            const info = taskList.getTask(index);
+            const myDayBlock = document.querySelector('.my-day-block');
+            //refresh info accoring to the present edit panel.
+            info.myDay = myDayBlock.dataset.value;
+            info.description = document.querySelector('.side-desc').value;
+            info.dueDate = document.querySelector('.side-due-date').valueAsDate;
+            info.title = document.querySelector('.edit-panel-title').value;
+            return info;
+        }
+
+        const edit = () => {
+            taskList.setTask(index, getEditedInfo()); 
+            console.log(taskList.getTask(index));
+        }
+
+        return {display}
+    })();
+
 
     // add task
     const addTodo = (title, description, dueDate, importance, status, myDay) => {
@@ -147,93 +255,11 @@ const createContainer = (() => {
         // todoBlock.setAttribute('data-task', task);
 
         todoBlock.addEventListener('click', (e) => { // display edit panel on click
-            editPanel.display(e);
+            if(!(e.target.className.includes('todo-status') || e.target.getAttribute('class') == 'todo-importance') ){
+                editPanel.display(e.currentTarget.dataset.index);
+            }
         });
     }
-
-
-
-    const editPanel = (() => {
-        const editPanelBlock = document.querySelector('.edit-panel');
-
-        const createEditBlock = () => {
-            const block = document.createElement('div');
-            block.classList.add('edit-block');
-            return block;
-        }
-        const clear = () => {
-            editPanelBlock.textContent = ''; 
-
-        }
-        const display = (e) => {
-            if(e.target.className.includes('todo-status') || e.target.getAttribute('class') == 'todo-importance')
-                return; // If click on status or importance, NOT open edit panel.
-            clear();
-            const currentIndex = e.currentTarget.dataset.index;
-            console.log(currentIndex);
-            console.log(taskList.getTask(currentIndex));
-            const collapseTask = collapseTodo(taskList.getTask(currentIndex)).display();
-            const generalBlock = createEditBlock();
-            generalBlock.appendChild(collapseTask);
-
-            const myDayBlock = createEditBlock();
-            const dueDateBlock = createEditBlock();
-            const descriptionBlock = createEditBlock();
-
-            const icon = document.createElement('img');
-            const myDayTitle = document.createElement('div');
-            const dueDate = document.createElement('input');
-            const dueDateTitle = document.createElement('div');
-            const description = document.createElement('input');
-            const saveButton = document.createElement('button');
-            icon.classList.add('side-icon');
-            myDayTitle.classList.add('side-title');
-            dueDateTitle.classList.add('side-due-date-title');
-            description.classList.add('side-desc');
-            dueDate.type = 'date';
-            saveButton.textContent = 'SAVE';
-
-            // console.log(taskList[e.target.dataset.index]);
-            icon.src = MyDay;
-            myDayTitle.textContent = 'Add to My Day';
-            dueDateTitle.textContent = 'Due Date: ';
-            description.placeholder = 'Description';
-
-            myDayBlock.appendChild(icon);
-            myDayBlock.appendChild(myDayTitle);
-            dueDateBlock.appendChild(dueDateTitle);
-            dueDateBlock.appendChild(dueDate);
-            descriptionBlock.appendChild(description);
-
-            editPanelBlock.appendChild(generalBlock);
-            editPanelBlock.appendChild(myDayBlock);
-            editPanelBlock.appendChild(dueDateBlock);
-            editPanelBlock.appendChild(descriptionBlock);
-            editPanelBlock.appendChild(saveButton);
-            container.style.marginRight = '300px';
-        }
-
-        return {display};
-    })();
-    // index:currentIndex,
-    // title:collapseTask.title.value, 
-    // dueDate:dueDate.valueAsDate, 
-    // description:description.value,
-    // saveButton:saveButton
-
-    // const editTask = () => {
-    //     console.log(EditPanel.currenIndex);
-    //     console.log(EditPanel.saveButton);
-    //     const task = taskList[EditPanel.index];
-    //     EditPanel.saveButton.addEventListener('click', () => {
-    //         task.title = editPanel.title;
-    //         task.dueDate = editPanel.dueDate;
-    //         task.description = editPanel.description;
-    //         console.log(task.title);
-    //         console.log(task.dueDate);
-    //         console.log(task.description);
-    //     });
-    // }
 
     const closeEditPanel = () => {
         const editPanel = document.querySelector('.edit-panel');
