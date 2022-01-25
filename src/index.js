@@ -4,7 +4,7 @@ import { createHeader } from './header.js';
 import { createSidebar } from './sidebar.js';
 
 const rendorPage = (() => {
-    createContainer.createAddButton();
+    createContainer.addButton.create();
     createHeader();
     createSidebar();
     // created for dev
