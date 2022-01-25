@@ -156,3 +156,7 @@ body {
     color: #777779;
     border: 1px solid #ebebeb;
 }
+
+.edit-panel .side-due-date-title {
+    font-size: 20px;
+}

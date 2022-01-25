@@ -1,6 +1,7 @@
 import Star from './img/stared.png';
 import Unstar from './img/unstar.png';
 import MyDay from './img/sun.png';
+import { createHeader } from './header';
 
 // Create the main part of the page.
 const createContainer = (() => {
@@ -126,20 +127,37 @@ const createContainer = (() => {
         editPanel.textContent = '';
         const generalBlock = createEditBlock();
         const myDayBlock = createEditBlock();
+        const dueDateBlock = createEditBlock();
+        const descriptionBlock = createEditBlock();
+
         const icon = document.createElement('img');
         const title = document.createElement('div');
+        const dueDate = document.createElement('input');
+        const dueDateTitle = document.createElement('div');
+        const description = document.createElement('input');
         icon.classList.add('side-icon');
         title.classList.add('side-title');
+        dueDateTitle.classList.add('side-due-date-title');
+        description.classList.add('side-desc');
+        dueDate.type = 'date';
 
         // console.log(taskList[e.target.dataset.index]);
         generalBlock.appendChild(displayCollapseTodo(taskList[e.currentTarget.dataset.index]));
         icon.src = MyDay;
         title.textContent = 'Add to My Day';
+        dueDateTitle.textContent = 'Due Date: ';
+        description.placeholder = 'Description';
+
         myDayBlock.appendChild(icon);
         myDayBlock.appendChild(title);
+        dueDateBlock.appendChild(dueDateTitle);
+        dueDateBlock.appendChild(dueDate);
+        descriptionBlock.appendChild(description);
 
         editPanel.appendChild(generalBlock);
         editPanel.appendChild(myDayBlock);
+        editPanel.appendChild(dueDateBlock);
+        editPanel.appendChild(descriptionBlock);
         container.style.marginRight = '300px';
     }
 
