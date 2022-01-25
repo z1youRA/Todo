@@ -2,6 +2,31 @@ import Star from './img/stared.png';
 import Unstar from './img/unstar.png';
 import MyDay from './img/sun.png';
 
+const taskList = (() => {
+    let tasklist = [];
+    let taskNum = 0;
+    const add = (task) => {
+        tasklist.push(task);
+        taskNum++;
+    }
+    const getTaskNum = () => {
+        return taskNum;
+    }
+    const remove = (taskIndex) => {
+        tasklist.splice(taskIndex, 1);
+    }
+    const getTask = (taskIndex) => {
+        return tasklist[taskIndex];
+    }
+    const setTask = (index, task) => {
+        tasklist[index] = task;
+    }
+    const getAllTask = () => {
+        return tasklist;
+    }
+    return {add, getTaskNum, remove, getTask, setTask, getAllTask};
+})();
+
 // Create the main part of the page.
 const createContainer = (filter) => {
     const container = document.querySelector('.container');
@@ -19,30 +44,7 @@ const createContainer = (filter) => {
         defaultImportance = false;
         defaultMyDay = 'true'; 
     }
-    const taskList = (() => {
-        let tasklist = [];
-        let taskNum = 0;
-        const add = (task) => {
-            tasklist.push(task);
-            taskNum++;
-        }
-        const getTaskNum = () => {
-            return taskNum;
-        }
-        const remove = (taskIndex) => {
-            tasklist.splice(taskIndex, 1);
-        }
-        const getTask = (taskIndex) => {
-            return tasklist[taskIndex];
-        }
-        const setTask = (index, task) => {
-            tasklist[index] = task;
-        }
-        const getAllTask = () => {
-            return tasklist;
-        }
-        return {add, getTaskNum, remove, getTask, setTask, getAllTask};
-    })();
+
 
     // Setup a todo logically, attribute information to it.
     let createTodo = (title, description, dueDate, importance, status, myDay) => {
@@ -271,6 +273,7 @@ const createContainer = (filter) => {
     }
 
     const render = () => {
+        console.log(taskList.getAllTask());
         container.textContent = ''
         addButton.create();
         if(filter == '0') {
@@ -282,6 +285,32 @@ const createContainer = (filter) => {
                         editPanel.display(e.currentTarget.dataset.index);
                     }
                 });
+            })
+        }
+        else if(filter == '1') {
+            taskList.getAllTask().forEach((task) => {
+                if(task.importance == true) {
+                    const todoBlock = collapseTodo(task).display();
+                    container.appendChild(todoBlock);//display the task on main page
+                    todoBlock.addEventListener('click', (e) => { // display edit panel on click
+                        if(!(e.target.className.includes('todo-status') || e.target.getAttribute('class') == 'todo-importance') ){
+                            editPanel.display(e.currentTarget.dataset.index);
+                        }
+                    });
+                }
+            })
+        }
+        else if(filter == '2') {
+            taskList.getAllTask().forEach((task) => {
+                if(task.myDay == 'true') {
+                    const todoBlock = collapseTodo(task).display();
+                    container.appendChild(todoBlock);//display the task on main page
+                    todoBlock.addEventListener('click', (e) => { // display edit panel on click
+                        if(!(e.target.className.includes('todo-status') || e.target.getAttribute('class') == 'todo-importance') ){
+                            editPanel.display(e.currentTarget.dataset.index);
+                        }
+                    });
+                }
             })
         }
     }

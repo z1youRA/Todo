@@ -4,11 +4,34 @@ import { createHeader } from './header.js';
 import { createSidebar } from './sidebar.js';
 
 const renderPage = (() => {
-
     createHeader();
     createSidebar();
-    // created for dev
-    // createContainer('0').addButton.create();
-    // createContainer('0').addTodo('abc', 'task', '2022-1-1', false, false, false);
+    const allInbox = document.querySelector('.inbox-class');
+    const important = document.querySelector('.important-class');
+    const myDay = document.querySelector('.my-day-class');
+    allInbox.classList.add('current');
     createContainer('0').render();
+    const clickAllInbox = () => {
+        createContainer('0').render();
+        allInbox.classList.add('current');
+        important.classList.remove('current');
+        myDay.classList.remove('current');
+    }
+
+    const clickImportant = () => {
+        createContainer('1').render();
+        allInbox.classList.remove('current');
+        important.classList.add('current');
+        myDay.classList.remove('current');
+    }
+
+    const clickMyDay = () => {
+        createContainer('2').render();
+        allInbox.classList.remove('current');
+        important.classList.remove('current');
+        myDay.classList.add('current');
+    }
+    allInbox.addEventListener('click', clickAllInbox);
+    important.addEventListener('click', clickImportant);
+    myDay.addEventListener('click', clickMyDay);
 })();
