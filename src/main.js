@@ -10,8 +10,8 @@ const createContainer = (() => {
     const container = document.querySelector('.container');
 
     // Setup a todo logically, attribute information to it.
-    const createTodo = (title, description, dueDate, importance, status) => {
-        return {title, description, dueDate, importance, status};
+    const createTodo = (title, description, dueDate, importance, status, myDay) => {
+        return {title, description, dueDate, importance, status, myDay};
     }
 
     const _clear = (block) => {
@@ -68,6 +68,21 @@ const createContainer = (() => {
         addButton.addEventListener('click', expandAddButton);
     }
 
+    const toggleImportance = (todo) => {
+        if(todo.importance == true) {
+            todo.importance = false;
+        }
+        else if(todo.importance == false) {
+            todo.importance = true;
+        }
+    }
+
+    const displayImportanceImg = (todo) => {
+        if(todo.importance == true)
+            return Star;
+        else if(todo.importance == false)
+            return Unstar;
+    }
 
     // Create elements of todo on the page.
     // Do not change easily
@@ -80,15 +95,19 @@ const createContainer = (() => {
         todoCollapse.setAttribute('data-index', taskNum++);
         todoStatus.classList.add('todo-status', 'checkbox');
         todoStatus.setAttribute('type', 'checkbox');
+        todoStatus.addEventListener('click', () => {
+            todo.status = todoStatus.checked;
+            console.log('Status:' + todo.status);
+        })
         todoTitle.classList.add('todo-title');
         todoTitle.textContent = todo.title;
         todoImportance.classList.add('todo-importance');
-        if(todo.importance == 1) {
-            todoImportance.src = Star;
-        }
-        else {
-            todoImportance.src = Unstar;
-        }
+        todoImportance.src = displayImportanceImg(todo);
+        todoImportance.addEventListener('click', () => {
+            toggleImportance(todo);
+            todoImportance.src = displayImportanceImg(todo);
+            console.log('importance:' + todo.importance);
+        })     
 
         todoCollapse.appendChild(todoStatus);
         todoCollapse.appendChild(todoTitle);
@@ -98,12 +117,12 @@ const createContainer = (() => {
     }
 
     // add task
-    const addTodo = (title, description, dueDate, importance, status) => {
+    const addTodo = (title, description, dueDate, importance, status, myDay) => {
         if(title == '' || title === undefined) {
             alert("ERROR: Empty Title!"); //#TODOchange to Add trigger not working and became black.
             return;
         }
-        let task = createTodo(title, description, dueDate, importance, status) // create a task
+        let task = createTodo(title, description, dueDate, importance, status, myDay) // create a task
         taskList.push(task);
         const todoBlock = displayCollapseTodo(task); 
         container.appendChild(todoBlock);//display the task on main page
@@ -120,9 +139,16 @@ const createContainer = (() => {
         return block;
     }
 
+    const editTask = (currentIndex, statusEle, titleEle, importanceEle, myDayEle, dueDateEle, descriptionEle, triggerButton) => {
+        triggerButton.addEventListener('click', () => {
+            console.log(statusEle.value, titleEle.value, importanceEle.value, myDayEle.value, dueDateEle.valueAsDate, descriptionEle.value);
+        })
+    }
+
     const openEditPanel = (e) => {
         if(e.target.className.includes('todo-status') || e.target.getAttribute('class') == 'todo-importance')
             return; // If click on status or importance, NOT open edit panel.
+        const currentIndex = e.currentTarget.dataset.index;
         const editPanel = document.querySelector('.edit-panel');
         editPanel.textContent = '';
         const generalBlock = createEditBlock();
@@ -130,6 +156,7 @@ const createContainer = (() => {
         const dueDateBlock = createEditBlock();
         const descriptionBlock = createEditBlock();
 
+        generalBlock.appendChild(displayCollapseTodo(taskList[currentIndex]));
         const icon = document.createElement('img');
         const title = document.createElement('div');
         const dueDate = document.createElement('input');
@@ -142,7 +169,6 @@ const createContainer = (() => {
         dueDate.type = 'date';
 
         // console.log(taskList[e.target.dataset.index]);
-        generalBlock.appendChild(displayCollapseTodo(taskList[e.currentTarget.dataset.index]));
         icon.src = MyDay;
         title.textContent = 'Add to My Day';
         dueDateTitle.textContent = 'Due Date: ';
@@ -159,6 +185,7 @@ const createContainer = (() => {
         editPanel.appendChild(dueDateBlock);
         editPanel.appendChild(descriptionBlock);
         container.style.marginRight = '300px';
+        // editTask(currentIndex, )#TODO waitfor invoking this function
     }
 
     // const openEditPanel = () => {

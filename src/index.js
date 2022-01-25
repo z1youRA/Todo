@@ -8,5 +8,5 @@ const rendorPage = (() => {
     createHeader();
     createSidebar();
     // created for dev
-    createContainer.addTodo('abc', 'task', '2022-1-1', '1', '1');
+    createContainer.addTodo('abc', 'task', '2022-1-1', false, false, false);
 })();
