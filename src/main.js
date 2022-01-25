@@ -1,12 +1,24 @@
 import Star from './img/stared.png';
 import Unstar from './img/unstar.png';
 import MyDay from './img/sun.png';
-import { createHeader } from './header';
 
 // Create the main part of the page.
-const createContainer = (() => {
+const createContainer = (filter) => {
     const container = document.querySelector('.container');
-
+    let defaultImportance;
+    let defaultMyDay;
+    if(filter == '0') {  // All tasks
+        defaultImportance = false;
+        defaultMyDay = 'false';
+    }
+    else if(filter == '1') { // Important tasks only
+        defaultImportance = true;
+        defaultMyDay = 'false'; 
+    }
+    else if(filter == '2') { // Myday tasks
+        defaultImportance = false;
+        defaultMyDay = 'true'; 
+    }
     const taskList = (() => {
         let tasklist = [];
         let taskNum = 0;
@@ -26,7 +38,10 @@ const createContainer = (() => {
         const setTask = (index, task) => {
             tasklist[index] = task;
         }
-        return {add, getTaskNum, remove, getTask, setTask};
+        const getAllTask = () => {
+            return tasklist;
+        }
+        return {add, getTaskNum, remove, getTask, setTask, getAllTask};
     })();
 
     // Setup a todo logically, attribute information to it.
@@ -42,17 +57,6 @@ const createContainer = (() => {
     
         // Display the collapsed add button.
         const display = () => {
-            addButton.classList.add('add-button');
-            addButton.classList.add('collapse');
-            const icon = document.createElement('div');
-            icon.classList.add('add-icon');
-            const text = document.createElement('div');
-    
-            icon.textContent = '+';
-            text.textContent = 'Add a task';
-            addButton.appendChild(icon);
-            addButton.appendChild(text);
-            container.appendChild(addButton);
         }
 
         // Expand add panel after clicking.
@@ -68,7 +72,8 @@ const createContainer = (() => {
             addTrigger.classList.add('add-trigger');
             addTrigger.textContent = 'ADD';
             addTrigger.addEventListener('click', () => {
-                addTodo(addTitle.value, 'Task', addDueDate.valueAsDate, '0');
+                addTodo(addTitle.value, 'Task', addDueDate.valueAsDate, defaultImportance, false, defaultMyDay);
+                render();
             });
             addStatus.classList.add('round-checkbox', 'add-status');
             addStatus.setAttribute('type', 'checkbox');
@@ -83,11 +88,21 @@ const createContainer = (() => {
         }
        
         const create = () => {
-            display();
-            const addButton = document.querySelector('.add-button');
+            _clear(addButton);
+            addButton.classList.add('add-button');
+            addButton.classList.add('collapse');
+            const icon = document.createElement('div');
+            icon.classList.add('add-icon');
+            const text = document.createElement('div');
+    
+            icon.textContent = '+';
+            text.textContent = 'Add a task';
             addButton.addEventListener('click', expand);
+            addButton.appendChild(icon);
+            addButton.appendChild(text);
+            container.appendChild(addButton);
         }
-        return {display, expand, create};
+        return {expand, create};
     })();
 
     // Create elements of todo on the page.
@@ -155,11 +170,6 @@ const createContainer = (() => {
         const _clear = () => {
             editPanelBlock.textContent = ''; 
         }
-
-        // const refresh = () => {
-        //     console.log(index);
-        //     display(index);
-        // }
 
         const display = (currentIndex) => {
             index = currentIndex;
@@ -235,8 +245,16 @@ const createContainer = (() => {
 
         const edit = () => {
             taskList.setTask(index, getEditedInfo()); 
-            console.log(taskList.getTask(index));
+            render();
         }
+
+        const closeEditPanel = () => {
+            const editPanel = document.querySelector('.edit-panel');
+            const container = document.querySelector('.main');
+            editPanel.classList.remove('opened');
+            editPanel.classList.add('closed');
+            container.style.marginRight = '0';
+        } //#TODO add button to collapse EditPanel
 
         return {display}
     })();
@@ -250,26 +268,25 @@ const createContainer = (() => {
         }
         let task = createTodo(title, description, dueDate, importance, status, myDay) // create a task
         taskList.add(task);
-        const todoBlock = collapseTodo(task).display();
-        container.appendChild(todoBlock);//display the task on main page
-        // todoBlock.setAttribute('data-task', task);
-
-        todoBlock.addEventListener('click', (e) => { // display edit panel on click
-            if(!(e.target.className.includes('todo-status') || e.target.getAttribute('class') == 'todo-importance') ){
-                editPanel.display(e.currentTarget.dataset.index);
-            }
-        });
     }
 
-    const closeEditPanel = () => {
-        const editPanel = document.querySelector('.edit-panel');
-        const container = document.querySelector('.main');
-        editPanel.classList.remove('opened');
-        editPanel.classList.add('closed');
-        container.style.marginRight = '0';
-    } //#TODO add button to collapse EditPanel
+    const render = () => {
+        container.textContent = ''
+        addButton.create();
+        if(filter == '0') {
+            taskList.getAllTask().forEach((task) => {
+                const todoBlock = collapseTodo(task).display();
+                container.appendChild(todoBlock);//display the task on main page
+                todoBlock.addEventListener('click', (e) => { // display edit panel on click
+                    if(!(e.target.className.includes('todo-status') || e.target.getAttribute('class') == 'todo-importance') ){
+                        editPanel.display(e.currentTarget.dataset.index);
+                    }
+                });
+            })
+        }
+    }
 
-    return {addTodo, addButton};
-})();
+    return {addTodo, addButton, collapseTodo, render};
+}
 
 export {createContainer};

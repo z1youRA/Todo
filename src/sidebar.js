@@ -25,9 +25,13 @@ const createSidebar = () => {
     const importantBlock =createSideblock('Important', Star);
     const inboxBlock = createSideblock('All Inbox', Inbox);
 
+    myDayBlock.classList.add('my-day-class');
+    importantBlock.classList.add('important-class');
+    inboxBlock.classList.add('inbox-class')
+
+    sidebar.appendChild(inboxBlock);
     sidebar.appendChild(myDayBlock);
     sidebar.appendChild(importantBlock);
-    sidebar.appendChild(inboxBlock);
 }
 
 export {createSidebar};
