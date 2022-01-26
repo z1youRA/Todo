@@ -189,7 +189,6 @@ const createContainer = (filter) => {
             todoCollapse.setAttribute('data-index', taskIndex);
             taskIndex++;
 
-
             todoTitle.classList.add('todo-title');
             todoTitle.textContent = todo.title;
             todoImportance.classList.add('todo-importance');
@@ -270,7 +269,7 @@ const createContainer = (filter) => {
                     myDayBlock.dataset.value = 'false';
                 }
             })
-            collapseButton.addEventListener('click', closeEditPanel);
+            collapseButton.addEventListener('click', close);
 
             icon.src = MyDay;
             myDayTitle.textContent = 'Add to My Day';
@@ -310,10 +309,11 @@ const createContainer = (filter) => {
         const edit = () => {
             taskList.setTask(index, getEditedInfo()); 
             taskList.saveToLocalStorage();
+            close();
             render();
         }
 
-        const closeEditPanel = () => {
+        const close = () => {
             const editPanel = document.querySelector('.edit-panel');
             editPanel.classList.remove('opened');
             editPanel.classList.add('closed');
@@ -334,6 +334,17 @@ const createContainer = (filter) => {
         taskList.add(task);
     }
 
+    const clickTask = (e) => { // display edit panel on click
+            if(!(e.target.className.includes('todo-status') || e.target.getAttribute('class') == 'todo-importance') ){
+                editPanel.display(e.currentTarget.dataset.index);
+                document.querySelectorAll('.todo-collapse').forEach((task) => {
+                    task.classList.remove('selected');
+                })
+                e.currentTarget.classList.add('selected');
+            }
+        }
+    
+
     const render = () => {
         taskIndex = 0;
         taskList.fetchFromLocalStorage();
@@ -344,11 +355,7 @@ const createContainer = (filter) => {
             taskList.getAllTask().forEach((task) => {
                 const todoBlock = collapseTodo(task).display();
                 container.appendChild(todoBlock);//display the task on main page
-                todoBlock.addEventListener('click', (e) => { // display edit panel on click
-                    if(!(e.target.className.includes('todo-status') || e.target.getAttribute('class') == 'todo-importance') ){
-                        editPanel.display(e.currentTarget.dataset.index);
-                    }
-                });
+                todoBlock.addEventListener('click', clickTask);
             })
         }
         else if(filter == '1') {
@@ -356,11 +363,7 @@ const createContainer = (filter) => {
                 if(task.importance == 'true') {
                     const todoBlock = collapseTodo(task).display();
                     container.appendChild(todoBlock);//display the task on main page
-                    todoBlock.addEventListener('click', (e) => { // display edit panel on click
-                        if(!(e.target.className.includes('todo-status') || e.target.getAttribute('class') == 'todo-importance') ){
-                            editPanel.display(e.currentTarget.dataset.index);
-                        }
-                    });
+                    todoBlock.addEventListener('click', clickTask);
                 }
             })
         }
@@ -369,11 +372,7 @@ const createContainer = (filter) => {
                 if(task.myDay == 'true') {
                     const todoBlock = collapseTodo(task).display();
                     container.appendChild(todoBlock);//display the task on main page
-                    todoBlock.addEventListener('click', (e) => { // display edit panel on click
-                        if(!(e.target.className.includes('todo-status') || e.target.getAttribute('class') == 'todo-importance') ){
-                            editPanel.display(e.currentTarget.dataset.index);
-                        }
-                    });
+                    todoBlock.addEventListener('click', clickTask);
                 }
             })
         }

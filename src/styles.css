@@ -11,6 +11,7 @@
     --footer-height: 40px;
     --sidebar-width: 300px;
     --border-grey: #ebebeb;
+    --selected-task-background-color: #f4f6ff
 }
 
 *,
@@ -138,8 +139,16 @@ body {
     align-items: center;
     gap: 10px;
     font-size: 28px;
-    margin: 10px 0;
-    height: 70px;
+    padding: 0 20px;
+    height: 90px;
+}
+
+.todo-collapse:hover {
+    background-color: var(--sidebar-background-color);
+}
+
+.todo-collapse.selected {
+    background-color: var(--selected-task-background-color);
 }
 
 .todo-importance {
