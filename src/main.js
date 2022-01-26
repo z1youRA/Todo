@@ -5,27 +5,81 @@ import MyDay from './img/sun.png';
 const taskList = (() => {
     let tasklist = [];
     let taskNum = 0;
+
+    const saveToLocalStorage = () => {
+        if (storageAvailable('localStorage')) {
+            console.log(taskNum);
+            localStorage.setItem('taskNum', taskNum);
+            tasklist.forEach((task, i) => {
+                localStorage.setItem(`task${i}`, JSON.stringify(task));
+            })
+        }
+    }
+
+    const fetchFromLocalStorage = () => {
+        if(storageAvailable('localStorage')) {
+            if(localStorage.length > 0) {
+                taskNum = parseInt(localStorage.getItem('taskNum'));
+                tasklist = [];
+                for(let i = 0; i < taskNum; i++) {
+                    tasklist.push(JSON.parse(localStorage.getItem(`task${i}`)));
+                }
+            }
+        }
+    }
+
     const add = (task) => {
         tasklist.push(task);
         taskNum++;
+        console.log(taskNum);
+        saveToLocalStorage();
     }
     const getTaskNum = () => {
         return taskNum;
     }
     const remove = (taskIndex) => {
         tasklist.splice(taskIndex, 1);
+        saveToLocalStorage();
     }
     const getTask = (taskIndex) => {
         return tasklist[taskIndex];
     }
     const setTask = (index, task) => {
         tasklist[index] = task;
+        saveToLocalStorage();
     }
     const getAllTask = () => {
         return tasklist;
     }
-    return {add, getTaskNum, remove, getTask, setTask, getAllTask};
+    return {add, getTaskNum, remove, getTask, setTask, getAllTask, saveToLocalStorage, fetchFromLocalStorage};
 })();
+
+function storageAvailable(type) {
+    var storage;
+    try {
+        storage = window[type];
+        var x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+    }
+    catch(e) {
+        return e instanceof DOMException && (
+            // everything except Firefox
+            e.code === 22 ||
+            // Firefox
+            e.code === 1014 ||
+            // test name field too, because code might not be present
+            // everything except Firefox
+            e.name === 'QuotaExceededError' ||
+            // Firefox
+            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+            // acknowledge QuotaExceededError only if there's something already stored
+            (storage && storage.length !== 0);
+    }
+}
+
+
 
 // Create the main part of the page.
 const createContainer = (filter) => {
@@ -276,7 +330,7 @@ const createContainer = (filter) => {
     }
 
     const render = () => {
-        console.log(taskList.getAllTask());
+        taskList.fetchFromLocalStorage();
         container.textContent = ''
         addButton.create();
         if(filter == '0') {
