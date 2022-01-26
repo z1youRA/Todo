@@ -2,6 +2,7 @@ import Star from './img/stared.png';
 import Unstar from './img/unstar.png';
 import MyDay from './img/sun.png';
 import Collapse from './img/collapse.png';
+import Delete from './img/delete.png';
 
 let taskIndex = 0;
 
@@ -40,6 +41,7 @@ const taskList = (() => {
     }
     const remove = (taskIndex) => {
         tasklist.splice(taskIndex, 1);
+        taskNum--;
         saveToLocalStorage();
     }
     const getTask = (taskIndex) => {
@@ -125,8 +127,9 @@ const createContainer = (filter) => {
             addTrigger.classList.add('add-trigger');
             addTrigger.textContent = 'ADD';
             addTrigger.addEventListener('click', () => {
-                addTodo(addTitle.value, 'Task', addDueDate.value, defaultImportance, 'false', defaultMyDay);
+                addTodo(addTitle.value, 'Add a note', addDueDate.value, defaultImportance, addStatus.checked, defaultMyDay);
                 render();
+                console.log(taskList.getAllTask())
             });
             addStatus.classList.add('round-checkbox', 'add-status');
             addStatus.setAttribute('type', 'checkbox');
@@ -235,7 +238,15 @@ const createContainer = (filter) => {
             const collapseButton = document.createElement('img');
             collapseButton.src = Collapse;
             collapseButton.classList.add('side-collapse-button', 'side-icon');
-
+            collapseButton.addEventListener('click', close);
+            const deleteButton = document.createElement('img');
+            deleteButton.src = Delete;
+            deleteButton.classList.add('side-delete-button', 'side-icon');
+            deleteButton.addEventListener('click', deleteTask);
+            const controlBlock = document.createElement('div');
+            controlBlock.classList.add('side-control-block');
+            controlBlock.appendChild(collapseButton);
+            controlBlock.appendChild(deleteButton);
             const titleBlock = _createEditBlock();
             const myDayBlock = _createEditBlock();
             const dueDateBlock = _createEditBlock();
@@ -243,12 +254,10 @@ const createContainer = (filter) => {
 
             const icon = document.createElement('img');
             const myDayTitle = document.createElement('div');
-            const dueDateTitle = document.createElement('div');
             title.defaultValue = currentTask.title;
             title.classList.add('edit-panel-title');
             icon.classList.add('side-icon');
             myDayTitle.classList.add('side-my-day-title');
-            dueDateTitle.classList.add('side-due-date-title');
             description.classList.add('side-desc');
             dueDate.classList.add('side-due-date');
             dueDate.type = 'date';
@@ -269,18 +278,15 @@ const createContainer = (filter) => {
                     myDayBlock.dataset.value = 'false';
                 }
             })
-            collapseButton.addEventListener('click', close);
 
             icon.src = MyDay;
             myDayTitle.textContent = 'Add to My Day';
-            dueDateTitle.textContent = 'Due Date: ';
             description.value = currentTask.description;
             saveButton.addEventListener('click', edit);
 
             titleBlock.appendChild(title);
             myDayBlock.appendChild(icon);
             myDayBlock.appendChild(myDayTitle);
-            dueDateBlock.appendChild(dueDateTitle);
             dueDateBlock.appendChild(dueDate);
             descriptionBlock.appendChild(description);
 
@@ -289,7 +295,7 @@ const createContainer = (filter) => {
             editPanelBlock.appendChild(dueDateBlock);
             editPanelBlock.appendChild(descriptionBlock);
             editPanelBlock.appendChild(saveButton);
-            editPanelBlock.appendChild(collapseButton);
+            editPanelBlock.appendChild(controlBlock);
             editPanelBlock.classList.add('opened');
             editPanelBlock.classList.remove('closed');
             container.classList.add('collapse');
@@ -318,6 +324,12 @@ const createContainer = (filter) => {
             editPanel.classList.remove('opened');
             editPanel.classList.add('closed');
             container.classList.toggle('collapse');
+        }
+
+        const deleteTask = () => {
+            taskList.remove(index);
+            close();
+            render();
         }
 
         return {display}

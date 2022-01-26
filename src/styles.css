@@ -8,7 +8,7 @@
     --main-color: #30343b;
     --blue-font-color: #0078d7;
     --header-height: 80px;
-    --footer-height: 40px;
+    --footer-height: 0px;
     --sidebar-width: 300px;
     --border-grey: #ebebeb;
     --selected-task-background-color: #f4f6ff
@@ -166,7 +166,8 @@ body {
     flex-direction: column;
     gap: 10px;
     background-color: var(--sidebar-background-color);
-    padding: 15px;
+    padding: 10px;
+    font-size: 20px;
 }
 
 .edit-panel.closed {
@@ -175,17 +176,39 @@ body {
 
 .edit-panel .edit-block {
     background-color: var(--sidebar-background-color);
-    border-radius: 8px;
+    border-radius: 3px;
     background-color: #fefefe;
     height: 70px;
     display: flex;
     align-items: center;
     color: #777779;
-    border: 1px solid #ebebeb;
+    border: 2px solid #ebebeb;
 }
 
-.edit-panel .side-due-date-title {
+.edit-panel input {
+    /* outline: none; */
+    border: none;
+    height: 100%;
+    width: 100%;
     font-size: 20px;
+    padding-left: 30px;
+}
+
+.edit-block:hover,
+.edit-panel input:hover{
+    background-color: var(--selected-background-color);
+    color: var(--main-color);
+}
+
+.edit-panel button {
+    height: 40px;
+    font-size: 20px;
+}
+
+.edit-panel .side-control-block {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
 }
 
 .my-day-block {
