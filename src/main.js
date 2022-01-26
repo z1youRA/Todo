@@ -125,7 +125,7 @@ const createContainer = (filter) => {
             addTrigger.classList.add('add-trigger');
             addTrigger.textContent = 'ADD';
             addTrigger.addEventListener('click', () => {
-                addTodo(addTitle.value, 'Task', addDueDate.valueAsDate, defaultImportance, 'false', defaultMyDay);
+                addTodo(addTitle.value, 'Task', addDueDate.value, defaultImportance, 'false', defaultMyDay);
                 render();
             });
             addStatus.classList.add('round-checkbox', 'add-status');
@@ -235,6 +235,7 @@ const createContainer = (filter) => {
             _clear();
             const collapseButton = document.createElement('img');
             collapseButton.src = Collapse;
+            collapseButton.classList.add('side-collapse-button', 'side-icon');
 
             const titleBlock = _createEditBlock();
             const myDayBlock = _createEditBlock();
@@ -252,7 +253,7 @@ const createContainer = (filter) => {
             description.classList.add('side-desc');
             dueDate.classList.add('side-due-date');
             dueDate.type = 'date';
-            dueDate.valueAsDate = currentTask.dueDate;
+            dueDate.value = currentTask.dueDate;
             saveButton.textContent = 'SAVE';
             myDayBlock.dataset.value = 'false';
             myDayBlock.classList.add('my-day-block');
@@ -292,7 +293,7 @@ const createContainer = (filter) => {
             editPanelBlock.appendChild(collapseButton);
             editPanelBlock.classList.add('opened');
             editPanelBlock.classList.remove('closed');
-            container.style.marginRight = '300px';
+            container.classList.add('collapse');
         }
 
         const getEditedInfo = () => {
@@ -301,7 +302,7 @@ const createContainer = (filter) => {
             //refresh info accoring to the present edit panel.
             info.myDay = myDayBlock.dataset.value;
             info.description = document.querySelector('.side-desc').value;
-            info.dueDate = document.querySelector('.side-due-date').valueAsDate;
+            info.dueDate = document.querySelector('.side-due-date').value;
             info.title = document.querySelector('.edit-panel-title').value;
             return info;
         }
@@ -314,11 +315,10 @@ const createContainer = (filter) => {
 
         const closeEditPanel = () => {
             const editPanel = document.querySelector('.edit-panel');
-            const container = document.querySelector('.main');
             editPanel.classList.remove('opened');
             editPanel.classList.add('closed');
-            container.style.marginRight = '0';
-        } //#TODO add button to collapse EditPanel
+            container.classList.toggle('collapse');
+        }
 
         return {display}
     })();
