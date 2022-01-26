@@ -1,6 +1,9 @@
 import Star from './img/stared.png';
 import Unstar from './img/unstar.png';
 import MyDay from './img/sun.png';
+import Collapse from './img/collapse.png';
+
+let taskIndex = 0;
 
 const taskList = (() => {
     let tasklist = [];
@@ -8,7 +11,6 @@ const taskList = (() => {
 
     const saveToLocalStorage = () => {
         if (storageAvailable('localStorage')) {
-            console.log(taskNum);
             localStorage.setItem('taskNum', taskNum);
             tasklist.forEach((task, i) => {
                 localStorage.setItem(`task${i}`, JSON.stringify(task));
@@ -31,7 +33,6 @@ const taskList = (() => {
     const add = (task) => {
         tasklist.push(task);
         taskNum++;
-        console.log(taskNum);
         saveToLocalStorage();
     }
     const getTaskNum = () => {
@@ -110,10 +111,6 @@ const createContainer = (filter) => {
         const _clear = (block) => {
             block.textContent = '';
         }
-    
-        // Display the collapsed add button.
-        const display = () => {
-        }
 
         // Expand add panel after clicking.
         const expand = () => {
@@ -165,16 +162,16 @@ const createContainer = (filter) => {
     // Do not change easily
     const collapseTodo = (todo) =>  {
         const toggleImportance = (todo) => {
-            if(todo.importance == true) {
+            if(todo.importance == 'true') {
                 todo.importance = 'false';
             }
             else if(todo.importance == 'false') {
-                todo.importance = true;
+                todo.importance = 'true';
             }
         }
     
         const displayImportanceImg = (todo) => {
-            if(todo.importance == true)
+            if(todo.importance == 'true')
                 return Star;
             else if(todo.importance == 'false')
                 return Unstar;
@@ -189,9 +186,8 @@ const createContainer = (filter) => {
             todoStatus.setAttribute('type', 'checkbox');
             todoStatus.checked = todo.status;
 
-            todoCollapse.setAttribute('data-index', taskList.getTaskNum() - 1);
-            todoStatus.setAttribute('data-index', taskList.getTaskNum() - 1);
-            todoImportance.setAttribute('data-index', taskList.getTaskNum() - 1);
+            todoCollapse.setAttribute('data-index', taskIndex);
+            taskIndex++;
 
 
             todoTitle.classList.add('todo-title');
@@ -201,10 +197,12 @@ const createContainer = (filter) => {
 
             todoStatus.addEventListener('click', (e) => {
                 todo.status = todoStatus.checked;
+                taskList.saveToLocalStorage();
             })
             todoImportance.addEventListener('click', (e) => {
                 toggleImportance(todo);
                 todoImportance.src = displayImportanceImg(todo);
+                taskList.saveToLocalStorage();
             })     
     
             todoCollapse.appendChild(todoStatus);
@@ -235,8 +233,10 @@ const createContainer = (filter) => {
             const description = document.createElement('input');
             const saveButton = document.createElement('button');
             _clear();
-            const titleBlock = _createEditBlock();
+            const collapseButton = document.createElement('img');
+            collapseButton.src = Collapse;
 
+            const titleBlock = _createEditBlock();
             const myDayBlock = _createEditBlock();
             const dueDateBlock = _createEditBlock();
             const descriptionBlock = _createEditBlock();
@@ -269,6 +269,7 @@ const createContainer = (filter) => {
                     myDayBlock.dataset.value = 'false';
                 }
             })
+            collapseButton.addEventListener('click', closeEditPanel);
 
             icon.src = MyDay;
             myDayTitle.textContent = 'Add to My Day';
@@ -288,6 +289,9 @@ const createContainer = (filter) => {
             editPanelBlock.appendChild(dueDateBlock);
             editPanelBlock.appendChild(descriptionBlock);
             editPanelBlock.appendChild(saveButton);
+            editPanelBlock.appendChild(collapseButton);
+            editPanelBlock.classList.add('opened');
+            editPanelBlock.classList.remove('closed');
             container.style.marginRight = '300px';
         }
 
@@ -304,6 +308,7 @@ const createContainer = (filter) => {
 
         const edit = () => {
             taskList.setTask(index, getEditedInfo()); 
+            taskList.saveToLocalStorage();
             render();
         }
 
@@ -330,8 +335,10 @@ const createContainer = (filter) => {
     }
 
     const render = () => {
+        taskIndex = 0;
         taskList.fetchFromLocalStorage();
         container.textContent = ''
+        // localStorage.clear();
         addButton.create();
         if(filter == '0') {
             taskList.getAllTask().forEach((task) => {
@@ -346,7 +353,7 @@ const createContainer = (filter) => {
         }
         else if(filter == '1') {
             taskList.getAllTask().forEach((task) => {
-                if(task.importance == true) {
+                if(task.importance == 'true') {
                     const todoBlock = collapseTodo(task).display();
                     container.appendChild(todoBlock);//display the task on main page
                     todoBlock.addEventListener('click', (e) => { // display edit panel on click
